@@ -9,7 +9,7 @@ const Footer = () => {
                 background: `url(${footer})`,
                 backgroundSize: 'contain',
             }}
-        className="p-10 mx-14">
+        className="p-10 mt-6 mx-14">
             <div className='footer flex justify-between'>
                 <div>
                     <span className="footer-title">Services</span>
@@ -33,7 +33,7 @@ const Footer = () => {
                 </div>
             </div>
             <div className='text-center mt-28'>
-                <p>Copyright © 2022 - All right reserved by ACME Industries Ltd</p>
+                <p>Copyright © 2022 - All right reserved</p>
             </div>
         </footer>
     );
