@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import Loading from "../../Pages/Shared/Loading/Loading";
 
 const AddDoctor = () => {
@@ -9,6 +11,8 @@ const AddDoctor = () => {
     formState: { errors },
     handleSubmit,
   } = useForm();
+
+  const navigate = useNavigate();
 
   const { data: specialities = [], isLoading } = useQuery({
     queryKey: ["speciality"],
@@ -20,7 +24,42 @@ const AddDoctor = () => {
   });
 
   const handleAddDoctor = (data) => {
-    console.log(data);
+    const image = data.image[0];
+    const formData = new FormData();
+    formData.append('image',image);
+    const url = `https://api.imgbb.com/1/upload?key=${process.env.REACT_APP_imgbb_key}`;
+    fetch(url, {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(imgData => {
+      if(imgData.success){
+        const doctor = {
+          name: data.name,
+          email: data.email,
+          speciality: data.speciality,
+          image: imgData.data.url
+        }
+        
+        fetch('http://localhost:5000/doctors', {
+          method: 'POST',
+          headers:{
+            'content-type': 'application/json',
+            authorization: `bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify(doctor)
+        })
+        .then(res => res.json())
+        .then(result => {
+          if(result.acknowledged){
+            toast.success('Doctors added successfully');
+            navigate('/dashboard/managedoctors')
+          }
+        })
+      }
+    })
+
   };
 
   if (isLoading) {
